@@ -34,7 +34,17 @@ public class ItemFrame extends javax.swing.JFrame {
 
     public ItemFrame() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        btnImport.setEnabled(false);
         connection = database.getConnection();
+        populateItem();
+    }
+    
+    public ItemFrame(Connection connection) {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        btnImport.setEnabled(false);
+        this.connection = connection;
         populateItem();
     }
 
@@ -61,8 +71,8 @@ public class ItemFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnImport = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
         txtSearch = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -109,9 +119,14 @@ public class ItemFrame extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton1.setText("Импорт товаров");
+        btnImport.setText("Импорт товаров");
 
-        jButton2.setText("Новый товар");
+        btnAdd.setText("Новый товар");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         txtSearch.setToolTipText("Искомый текст");
         txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -131,9 +146,9 @@ public class ItemFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 363, Short.MAX_VALUE)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnImport, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -143,8 +158,8 @@ public class ItemFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnImport, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(txtSearch))
                 .addContainerGap())
@@ -176,8 +191,8 @@ public class ItemFrame extends javax.swing.JFrame {
 
     private void tableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMousePressed
         JTable tableClick = (JTable) evt.getSource();
-        if (evt.getClickCount() == 1 && tableClick.getSelectedRow() != -1) {
-            int row = tableClick.getSelectedRow();
+        int row = tableClick.getSelectedRow();
+        if (evt.getClickCount() == 1 && row != -1) {
             int column = tableClick.getSelectedColumn();
             String text = tableClick.getValueAt(row, column).toString();
             System.out.println(text);
@@ -186,7 +201,7 @@ public class ItemFrame extends javax.swing.JFrame {
             clipboard.setContents(selection, selection);
         }
         if (evt.getClickCount() == 2 && tableClick.getSelectedRow() != -1) {
-            JOptionPane.showMessageDialog(null, "COOL");
+            new HistoryFrame(connection, tableClick.getValueAt(row, 0).toString()).setVisible(true);
         }
     }//GEN-LAST:event_tableMousePressed
 
@@ -203,6 +218,11 @@ public class ItemFrame extends javax.swing.JFrame {
 
     private void txtSearchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyTyped
     }//GEN-LAST:event_txtSearchKeyTyped
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        this.dispose();
+        new AddItemFrame(connection).setVisible(true);
+    }//GEN-LAST:event_btnAddActionPerformed
 
     /**
      * @param args the command line arguments
@@ -240,8 +260,8 @@ public class ItemFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnImport;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

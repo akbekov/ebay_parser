@@ -38,7 +38,7 @@ public class Database {
         }
     }
 
-    public void insert(String table, StringBuilder fields, StringBuilder values, Statement state) {
+    public void insert(String table, String fields, String values, Statement state) {
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("INSERT INTO ").append(table).append(" (").append(fields).append(") ");
