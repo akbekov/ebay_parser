@@ -47,7 +47,7 @@ public class MainFrame extends javax.swing.JFrame {
             Statement state = connection.createStatement();
             ResultSet rs;
             rs = database.select("history h, item i",
-                    "i.asin, i.url, h.date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
+                    "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
                     "h.id_item = i.id and h.amount <= 5", "h.date_check desc", state);
             table.setModel(DbUtils.resultSetToTableModel(rs));
             rs.close();
@@ -62,7 +62,7 @@ public class MainFrame extends javax.swing.JFrame {
             Statement state = connection.createStatement();
             ResultSet rs;
             rs = database.select("history",
-                    "date_check", null,
+                    "strftime('%d-%m-%Y %H:%M:%S', date_check) date_check", null,
                     "id desc limit 1", state);
             if (rs.next()) {
                 txtLastDate.setText(rs.getString("date_check"));

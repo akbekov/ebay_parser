@@ -57,12 +57,12 @@ public class HistoryFrame extends javax.swing.JFrame {
             ResultSet rs;
             if (all) {
                 rs = database.select("history h, item i",
-                        "i.asin, i.url, h.date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
+                        "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
                         "h.id_item = i.id", "h.date_check desc", state);
 
             } else {
                 rs = database.select("history h, item i",
-                        "i.asin, i.url, h.date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
+                        "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
                         "h.id_item = i.id", "h.date_check desc limit 150", state);
             }
             table.setModel(DbUtils.resultSetToTableModel(rs));
@@ -76,7 +76,7 @@ public class HistoryFrame extends javax.swing.JFrame {
         try {
             Statement state = connection.createStatement();
             ResultSet rs = database.select("history h, item i",
-                    "i.asin, i.url, h.date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
+                    "i.asin, i.url,strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
                     "h.id_item = i.id and i.id = " + id, "h.date_check desc limit 150", state);
             table.setModel(DbUtils.resultSetToTableModel(rs));
             state.close();
