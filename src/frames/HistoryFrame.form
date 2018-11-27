@@ -118,6 +118,8 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="txtSearch" min="-2" pref="243" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
+                  <Component id="jButton3" min="-2" pref="150" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButton2" min="-2" pref="150" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jButton1" min="-2" pref="150" max="-2" attributes="0"/>
@@ -133,6 +135,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jButton1" alignment="3" pref="35" max="32767" attributes="0"/>
                           <Component id="jButton2" alignment="3" pref="35" max="32767" attributes="0"/>
+                          <Component id="jButton3" alignment="3" pref="35" max="32767" attributes="0"/>
                       </Group>
                       <Component id="txtSearch" max="32767" attributes="0"/>
                   </Group>
@@ -164,6 +167,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButton3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x41f;&#x43e;&#x441;&#x43b;&#x435;&#x434;&#x43d;&#x44f;&#x44f; &#x43f;&#x440;&#x43e;&#x432;&#x435;&#x440;&#x43a;&#x430;"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

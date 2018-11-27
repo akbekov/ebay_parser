@@ -48,10 +48,18 @@ public class MainFrame extends javax.swing.JFrame {
             ResultSet rs;
             rs = database.select("history h, item i",
                     "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
-                    "h.id_item = i.id and h.amount <= 5", "h.date_check desc", state);
+                    "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id) and h.amount <= 5", "h.date_check desc", state);
             table.setModel(DbUtils.resultSetToTableModel(rs));
             rs.close();
             state.close();
+            table.getColumnModel().getColumn(0).setMinWidth(35);
+            table.getColumnModel().getColumn(1).setMinWidth(35);
+            table.getColumnModel().getColumn(2).setMinWidth(130);
+            table.getColumnModel().getColumn(3).setMinWidth(40);
+            table.getColumnModel().getColumn(4).setMinWidth(40);
+            table.getColumnModel().getColumn(5).setMinWidth(40);
+            table.getColumnModel().getColumn(6).setMinWidth(40);
+            table.getColumnModel().getColumn(7).setMinWidth(130);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Возникла ошибка при извлечении данных проверки!\nКод ошибки: " + e.getLocalizedMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
         }

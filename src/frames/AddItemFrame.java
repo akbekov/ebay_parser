@@ -209,7 +209,7 @@ public class AddItemFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnParseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnParseActionPerformed
-        if (txtAsin.getText().length() > 0 && txtUrl.getText().length() > 0 && txtTitle.getText().length() > 0) {
+        if (txtAsin.getText().length() > 0 && txtUrl.getText().length() > 0) {
             try {
                 Document doc = Jsoup.connect(txtUrl.getText()).get();
                 Element brand = doc.select("h2[itemprop=brand] span[itemprop=name]").first();

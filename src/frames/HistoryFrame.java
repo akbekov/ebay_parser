@@ -28,38 +28,43 @@ import org.jsoup.select.Elements;
 public class HistoryFrame extends javax.swing.JFrame {
 
     private final Database database = new Database();
+    private final WaitFrame waitFrame = new WaitFrame();
     private Connection connection;
 
     public HistoryFrame() {
         initComponents();
         this.setLocationRelativeTo(null);
         connection = database.getConnection();
-        populateHistory(false);
+        populateHistory("");
     }
 
     public HistoryFrame(Connection connection) {
         initComponents();
         this.setLocationRelativeTo(null);
         this.connection = connection;
-        populateHistory(false);
+        populateHistory("");
     }
 
     public HistoryFrame(Connection connection, String id) {
         initComponents();
         this.setLocationRelativeTo(null);
         this.connection = connection;
-        populateHistory(id);
+        populateItemHistory(id);
     }
 
-    private void populateHistory(boolean all) {
+    private void populateHistory(String type) {
         try {
             Statement state = connection.createStatement();
             ResultSet rs;
-            if (all) {
+            if (type.equals("all")) {
                 rs = database.select("history h, item i",
                         "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
                         "h.id_item = i.id", "h.date_check desc", state);
 
+            } else if (type.equals("last")) {
+                rs = database.select("history h, item i",
+                        "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
+                        "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id)", "h.date_check desc", state);
             } else {
                 rs = database.select("history h, item i",
                         "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
@@ -67,12 +72,20 @@ public class HistoryFrame extends javax.swing.JFrame {
             }
             table.setModel(DbUtils.resultSetToTableModel(rs));
             state.close();
+            table.getColumnModel().getColumn(0).setMinWidth(35);
+            table.getColumnModel().getColumn(1).setMinWidth(35);
+            table.getColumnModel().getColumn(2).setMinWidth(130);
+            table.getColumnModel().getColumn(3).setMinWidth(40);
+            table.getColumnModel().getColumn(4).setMinWidth(40);
+            table.getColumnModel().getColumn(5).setMinWidth(40);
+            table.getColumnModel().getColumn(6).setMinWidth(40);
+            table.getColumnModel().getColumn(7).setMinWidth(130);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void populateHistory(String id) {
+    private void populateItemHistory(String id) {
         try {
             Statement state = connection.createStatement();
             ResultSet rs = database.select("history h, item i",
@@ -80,6 +93,14 @@ public class HistoryFrame extends javax.swing.JFrame {
                     "h.id_item = i.id and i.id = " + id, "h.date_check desc limit 150", state);
             table.setModel(DbUtils.resultSetToTableModel(rs));
             state.close();
+            table.getColumnModel().getColumn(0).setMinWidth(35);
+            table.getColumnModel().getColumn(1).setMinWidth(35);
+            table.getColumnModel().getColumn(2).setMinWidth(110);
+            table.getColumnModel().getColumn(3).setMinWidth(40);
+            table.getColumnModel().getColumn(4).setMinWidth(40);
+            table.getColumnModel().getColumn(5).setMinWidth(40);
+            table.getColumnModel().getColumn(6).setMinWidth(40);
+            table.getColumnModel().getColumn(7).setMinWidth(150);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,6 +192,7 @@ public class HistoryFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         txtSearch = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Проверки количества и цен");
@@ -231,6 +253,13 @@ public class HistoryFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setText("Последняя проверка");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -239,6 +268,8 @@ public class HistoryFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -251,7 +282,8 @@ public class HistoryFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
                     .addComponent(txtSearch))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -292,29 +324,40 @@ public class HistoryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSearchKeyReleased
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            Statement state = connection.createStatement();
-            List<Item> itemList = new ArrayList<>();
-            ResultSet rs = database.select("item", "*", "status = 1", "id desc", state);
-            while (rs.next()) {
-                Item item = new Item(rs.getInt("id"), rs.getString("url"), rs.getString("asin"), rs.getString("title"), 1, rs.getString("brand"));
-                System.out.println("item: " + item.getId());
-                itemList.add(item);
+        waitFrame.setVisible(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Statement state = connection.createStatement();
+                    List<Item> itemList = new ArrayList<>();
+                    ResultSet rs = database.select("item", "*", "status = 1", "id desc", state);
+                    while (rs.next()) {
+                        Item item = new Item(rs.getInt("id"), rs.getString("url"), rs.getString("asin"), rs.getString("title"), 1, rs.getString("brand"));
+                        System.out.println("item: " + item.getId());
+                        itemList.add(item);
+                    }
+                    rs.close();
+                    for (Item item : itemList) {
+                        checkItem(state, item);
+                    }
+                    state.close();
+                    populateHistory("last");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                waitFrame.dispose();
             }
-            rs.close();
-            for (Item item : itemList) {
-                checkItem(state, item);
-            }
-            state.close();
-            populateHistory(false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }).start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        populateHistory(true);
+        populateHistory("all");
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        populateHistory("last");
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -354,6 +397,7 @@ public class HistoryFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
