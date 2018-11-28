@@ -50,6 +50,20 @@ public class Database {
         }
     }
 
+    public void update(String table, String set, String where, Statement state) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("UPDATE ").append(table).append(" SET ").append(set).append(" ");
+            if (where != null) {
+                sql.append("WHERE ").append(where).append(" ");
+            }
+            state.executeUpdate(String.valueOf(sql));
+        } catch (Exception e) {
+            System.out.println("Database:insert error:" + e.getLocalizedMessage());
+            System.out.println("Database:insert error:table:" + table + ":set:" + set + ":where:" + where);
+        }
+    }
+
     public void delete(String table, String condition, Statement state) {
         try {
             StringBuilder sql = new StringBuilder();

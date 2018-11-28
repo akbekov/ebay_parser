@@ -29,11 +29,11 @@ public class MainFrame extends javax.swing.JFrame {
         populateTable();
         populateLastDate();
     }
-    
-    private void addTables(){
+
+    private void addTables() {
         try {
             Statement state = connection.createStatement();
-            database.create("if not exists item", "id INTEGER PRIMARY KEY, url TEXT NOT NULL UNIQUE, asin TEXT NOT NULL, title TEXT, status INTEGER DEFAULT 1, brand TEXT NOT NULL", state);
+            database.create("if not exists item", "id INTEGER PRIMARY KEY, url TEXT NOT NULL UNIQUE, asin TEXT NOT NULL, title TEXT, status INTEGER DEFAULT 1, brand TEXT NOT NULL, date_change TIMESTAMP", state);
             database.create("if not exists history", "id INTEGER PRIMARY KEY,id_item INTEGER,date_check TIMESTAMP DEFAULT CURRENT_TIMESTAMP,price REAL, prev_price TEXT,descr TEXT NOT NULL,amount INTEGER,prev_amount INTEGER,\n"
                     + "    FOREIGN KEY (id_item) REFERENCES item(id)", state);
             state.close();
