@@ -12,20 +12,29 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import main.Item;
 import main.Utils;
 import net.proteanit.sql.DbUtils;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -43,7 +52,6 @@ public class ItemFrame extends javax.swing.JFrame {
     public ItemFrame() {
         initComponents();
         this.setLocationRelativeTo(null);
-        btnImport.setEnabled(false);
         connection = database.getConnection();
         populateItem();
     }
@@ -51,7 +59,6 @@ public class ItemFrame extends javax.swing.JFrame {
     public ItemFrame(Connection connection) {
         initComponents();
         this.setLocationRelativeTo(null);
-        btnImport.setEnabled(false);
         this.connection = connection;
         populateItem();
     }
@@ -100,8 +107,6 @@ public class ItemFrame extends javax.swing.JFrame {
         setTitle("Список товаров");
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         table.setAutoCreateRowSorter(true);
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -138,9 +143,12 @@ public class ItemFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         btnImport.setText("Импорт товаров");
+        btnImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImportActionPerformed(evt);
+            }
+        });
 
         btnAdd.setText("Новый товар");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -187,7 +195,7 @@ public class ItemFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addComponent(btnAdd3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnAdd2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -215,8 +223,6 @@ public class ItemFrame extends javax.swing.JFrame {
                     .addComponent(txtSearch))
                 .addContainerGap())
         );
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel1.setText("Текущий статус товара");
 
@@ -360,6 +366,43 @@ public class ItemFrame extends javax.swing.JFrame {
     private void btnAdd3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdd3ActionPerformed
         utils.toExcel(table, "Items", new int[]{7});
     }//GEN-LAST:event_btnAdd3ActionPerformed
+
+    private void btnImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportActionPerformed
+        try {
+            JFileChooser fileOpen = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel Document", "xlsx");
+            fileOpen.setFileFilter(filter);
+            File file = null;
+            int ret = fileOpen.showDialog(null, "Открыть файл");
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                file = fileOpen.getSelectedFile();
+            }
+            FileInputStream inputStream = new FileInputStream(file);
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            List<Item> itemList = new ArrayList<>();
+            Sheet sheet = workbook.getSheetAt(0);
+            int first = 1;
+            int last = sheet.getLastRowNum();
+            while (first <= last) {
+                Item item = new Item();
+                item.setAsin(sheet.getRow(first).getCell(1).getStringCellValue());
+                item.setUrl(sheet.getRow(first).getCell(2).getStringCellValue());
+                item.setBrand(utils.getBrand(item.getUrl()));
+                itemList.add(item);
+                System.out.println(item.toString());
+                first = first + 1;
+            }
+            Database database = new Database();
+            Statement state = database.getConnection().createStatement();
+            for (Item item : itemList) {
+                database.insert("item", "asin, url, brand", "'" + item.getAsin() + "','" + item.getUrl() + "','" + item.getBrand() + "'", state);
+            }
+            workbook.close();
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnImportActionPerformed
 
     /**
      * @param args the command line arguments

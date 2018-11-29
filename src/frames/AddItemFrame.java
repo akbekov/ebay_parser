@@ -66,8 +66,6 @@ public class AddItemFrame extends javax.swing.JFrame {
         setTitle("Список товаров");
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         jLabel1.setText("Уникальный код товара (ASIN)");
 
         jLabel2.setText("Ссылка на товар (URL)");
@@ -126,8 +124,6 @@ public class AddItemFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         btnAdd.setText("Добавить");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -147,7 +143,7 @@ public class AddItemFrame extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(568, Short.MAX_VALUE)
+                .addContainerGap(572, Short.MAX_VALUE)
                 .addComponent(btnParse, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)

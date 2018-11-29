@@ -9,6 +9,7 @@ import database.Database;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 import main.Utils;
 import net.proteanit.sql.DbUtils;
 
@@ -35,18 +36,6 @@ public class ResultFrame extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.connection = connection;
-    }
-
-    private void getStatistic() {
-        try {
-            Statement state = connection.createStatement();
-            ResultSet rs;
-            rs = database.select("history h, item i",
-                    "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
-                    "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id) and h.prev_price != 0", "h.date_check desc", state);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void populateHistory(String type) {
@@ -80,7 +69,7 @@ public class ResultFrame extends javax.swing.JFrame {
             table.getColumnModel().getColumn(6).setMinWidth(40);
             table.getColumnModel().getColumn(7).setMinWidth(130);
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Возникла ошибка при извлечении данных из таблицы!\nКод ошибки: " + e.getLocalizedMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -114,8 +103,6 @@ public class ResultFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Результаты проверки");
         setResizable(false);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -175,7 +162,7 @@ public class ResultFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 743, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -203,10 +190,11 @@ public class ResultFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtAll, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(txtAll, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -228,11 +216,19 @@ public class ResultFrame extends javax.swing.JFrame {
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton1, jButton2, jButton3});
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         jButton4.setText("Изменить статус");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Экспорт в Excel");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -297,6 +293,25 @@ public class ResultFrame extends javax.swing.JFrame {
         populateHistory("amount");
         txtAmount.setText("" + table.getRowCount());
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            try {
+                Statement state = connection.createStatement();
+                int status = 0;
+                database.update("item", "status = " + status + ", date_change = CURRENT_TIMESTAMP", "asin = '" + table.getValueAt(row, 0) + "'", state);
+                state.close();
+                JOptionPane.showMessageDialog(null, "Изменен статус товара " + table.getValueAt(row, 0) + " на неактивный!", "Изменение статуса", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Возникла ошибка при изменении статуса товара!\nКод ошибки: " + e.getLocalizedMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        utils.toExcel(table, "Result", new int[]{3, 4, 5, 6});
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -108,8 +108,6 @@ public class MainFrame extends javax.swing.JFrame {
         setTitle("У Атая - Главная");
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -158,8 +156,6 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         jButton1.setText("Товары");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -174,7 +170,12 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Отчеты");
+        jButton3.setText("Результаты проверки");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Выход");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -260,6 +261,10 @@ public class MainFrame extends javax.swing.JFrame {
         populateTable();
         populateLastDate();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        new ResultFrame(connection).setVisible(true);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments

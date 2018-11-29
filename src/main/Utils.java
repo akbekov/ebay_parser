@@ -14,6 +14,9 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /**
  *
@@ -50,6 +53,12 @@ public class Utils {
 
     private boolean contains(int key, int[] array) {
         return Arrays.stream(array).anyMatch(i -> i == key);
+    }
+
+    public String getBrand(String url) throws IOException {
+        Document doc = Jsoup.connect(url).get();
+        Element brand = doc.select("h2[itemprop=brand] span[itemprop=name]").first();
+        return brand.text();
     }
 
 }

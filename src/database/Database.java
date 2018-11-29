@@ -59,8 +59,8 @@ public class Database {
             }
             state.executeUpdate(String.valueOf(sql));
         } catch (Exception e) {
-            System.out.println("Database:insert error:" + e.getLocalizedMessage());
-            System.out.println("Database:insert error:table:" + table + ":set:" + set + ":where:" + where);
+            System.out.println("Database:update error:" + e.getLocalizedMessage());
+            System.out.println("Database:update error:table:" + table + ":set:" + set + ":where:" + where);
         }
     }
 

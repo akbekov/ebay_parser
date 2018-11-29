@@ -203,8 +203,6 @@ public class HistoryFrame extends javax.swing.JFrame {
         setTitle("Проверки количества и цен");
         setResizable(false);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -224,7 +222,7 @@ public class HistoryFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 941, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 945, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -234,8 +232,6 @@ public class HistoryFrame extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jButton1.setText("Новая проверка");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -362,6 +358,7 @@ public class HistoryFrame extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
                 waitFrame.dispose();
+                new ResultFrame(connection).setVisible(true);
             }
         }).start();
     }//GEN-LAST:event_jButton1ActionPerformed

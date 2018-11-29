@@ -18,6 +18,9 @@ public class Item {
     private int status;
     private String brand;
 
+    public Item() {
+    }
+
     public Item(int id, String url, String asin, String title, int status, String brand) {
         this.id = id;
         this.url = url;
@@ -74,7 +77,5 @@ public class Item {
     public void setBrand(String brand) {
         this.brand = brand;
     }
-    
-    
 
 }
