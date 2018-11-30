@@ -66,10 +66,10 @@ public class ItemFrame extends javax.swing.JFrame {
     private void populateItem() {
         try {
             Statement state = connection.createStatement();
-            ResultSet rs = database.select("item i, history h",
+            ResultSet rs = database.select("item i",
                     "i.id, i.url, i.asin, i.title,case when i.status = 1 then 'Active' else 'Inactive' end status, i.brand, "
-                    + "strftime('%d-%m-%Y %H:%M:%S', i.date_change) date_change, h.amount",
-                    "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id)", "i.id asc", state);
+                    + "strftime('%d-%m-%Y %H:%M:%S', i.date_change) date_change, (select amount from history where id = (select max(id) from history where id_item = i.id)) amount",
+                    null, "i.id asc", state);
             table.setModel(DbUtils.resultSetToTableModel(rs));
             state.close();
             table.getColumnModel().getColumn(6).setMinWidth(120);
