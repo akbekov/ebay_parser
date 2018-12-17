@@ -6,9 +6,13 @@
 package frames;
 
 import database.Database;
+import java.awt.Desktop;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import main.Utils;
 import net.proteanit.sql.DbUtils;
@@ -46,17 +50,17 @@ public class ResultFrame extends javax.swing.JFrame {
                 case "price":
                     rs = database.select("history h, item i",
                             "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
-                            "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id) and h.prev_price != 0.0", "h.date_check desc", state);
+                            "h.id_item = i.id and strftime('%d-%m-%Y',h.date_check) = (select strftime('%d-%m-%Y', date_check) from history order by date_check desc limit 1) and h.prev_price != 0.0", "h.date_check desc", state);
                     break;
                 case "amount":
                     rs = database.select("history h, item i",
                             "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
-                            "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id) and h.prev_amount != 0", "h.date_check desc", state);
+                            "h.id_item = i.id and strftime('%d-%m-%Y',h.date_check) = (select strftime('%d-%m-%Y', date_check) from history order by date_check desc limit 1) and h.prev_amount != 0", "h.date_check desc", state);
                     break;
                 default:
                     rs = database.select("history h, item i",
                             "i.asin, i.url, strftime('%d-%m-%Y %H:%M:%S', h.date_check) date_check, h.price, h.prev_price, h.amount, h.prev_amount, h.descr",
-                            "h.id_item = i.id and h.id = (select max(id) from history where id_item = i.id)", "h.date_check desc", state);
+                            "h.id_item = i.id and strftime('%d-%m-%Y',h.date_check) = (select strftime('%d-%m-%Y', date_check) from history order by date_check desc limit 1)", "h.date_check desc", state);
             }
             table.setModel(DbUtils.resultSetToTableModel(rs));
             state.close();
@@ -99,6 +103,7 @@ public class ResultFrame extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Результаты проверки");
@@ -230,12 +235,21 @@ public class ResultFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton6.setText("Перейти по ссылке");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -247,7 +261,8 @@ public class ResultFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -313,6 +328,17 @@ public class ResultFrame extends javax.swing.JFrame {
         utils.toExcel(table, "Result", new int[]{3, 4, 5, 6});
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            try {
+                Desktop.getDesktop().browse(new URI(table.getValueAt(row, 1).toString()));
+            } catch (Exception ex) {
+                Logger.getLogger(ItemFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -354,6 +380,7 @@ public class ResultFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

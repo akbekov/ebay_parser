@@ -58,6 +58,9 @@ public class Utils {
     public String getBrand(String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
         Element brand = doc.select("h2[itemprop=brand] span[itemprop=name]").first();
+        if (brand == null) {
+            return "-";
+        }
         return brand.text();
     }
 

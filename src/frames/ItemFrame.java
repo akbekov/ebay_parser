@@ -102,6 +102,7 @@ public class ItemFrame extends javax.swing.JFrame {
         txtStatus = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         txtLastDate = new javax.swing.JTextField();
+        btnImport1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Список товаров");
@@ -232,6 +233,13 @@ public class ItemFrame extends javax.swing.JFrame {
 
         txtLastDate.setEditable(false);
 
+        btnImport1.setText("Удалить товар");
+        btnImport1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImport1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -245,7 +253,10 @@ public class ItemFrame extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 97, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnImport1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -259,6 +270,8 @@ public class ItemFrame extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtLastDate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnImport1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -352,7 +365,7 @@ public class ItemFrame extends javax.swing.JFrame {
                 if (txtStatus.getText().equals("Active")) {
                     status = 0;
                 }
-                database.update("item", "status = " + status + ", date_change = CURRENT_TIMESTAMP", "id = " + table.getValueAt(row, 0), state);
+                database.update("item", "status = " + status + ", date_change = DATETIME(current_timestamp, 'localtime')", "id = " + table.getValueAt(row, 0), state);
                 state.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -392,17 +405,42 @@ public class ItemFrame extends javax.swing.JFrame {
                 System.out.println(item.toString());
                 first = first + 1;
             }
-            Database database = new Database();
-            Statement state = database.getConnection().createStatement();
+            Statement state = connection.createStatement();
             for (Item item : itemList) {
-                database.insert("item", "asin, url, brand", "'" + item.getAsin() + "','" + item.getUrl() + "','" + item.getBrand() + "'", state);
+                if (!item.getBrand().equals("-")) {
+                    database.insert("item", "asin, url, brand", "'" + item.getAsin() + "','" + item.getUrl() + "','" + item.getBrand() + "'", state);
+                }
             }
             workbook.close();
             inputStream.close();
+            state.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        txtLastDate.setText("");
+        txtStatus.setText("");
+        populateItem();
     }//GEN-LAST:event_btnImportActionPerformed
+
+    private void btnImport1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImport1ActionPerformed
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Удалить товар с ASIN: " + table.getValueAt(row, 2) + "?\nТакже будут удалены все проверки выбранного товара!", "Удаление товара", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                try {
+                    Statement state = connection.createStatement();
+                    database.delete("history", " id_item = " + table.getValueAt(row, 0), state);
+                    database.delete("item", " id = " + table.getValueAt(row, 0), state);
+                    state.close();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Возникла ошибка при удалении товара!\nКод ошибки: " + e.getLocalizedMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+                txtLastDate.setText("");
+                txtStatus.setText("");
+                populateItem();
+            }
+        }
+    }//GEN-LAST:event_btnImport1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -445,6 +483,7 @@ public class ItemFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd2;
     private javax.swing.JButton btnAdd3;
     private javax.swing.JButton btnImport;
+    private javax.swing.JButton btnImport1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

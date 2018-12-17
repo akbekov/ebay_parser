@@ -127,9 +127,9 @@ public class HistoryFrame extends javax.swing.JFrame {
             System.out.println("price: " + price.attr("content"));
             Element brand = doc.select("h2[itemprop=brand] span[itemprop=name]").first();
             System.out.println("brand: " + brand.text() + "\n");
-            database.insert("history", "id_item,price,prev_price,descr,amount,prev_amount",
+            database.insert("history", "id_item,price,prev_price,descr,amount,prev_amount,date_check",
                     item.getId() + "," + price.attr("content") + "," + priceDiff(Double.parseDouble(price.attr("content")), item, state) + ","
-                    + "'" + descr + "'," + parseStock(descr.toUpperCase()) + "," + amountDiff(parseStock(descr.toUpperCase()), item, state),
+                    + "'" + descr + "'," + parseStock(descr.toUpperCase()) + "," + amountDiff(parseStock(descr.toUpperCase()), item, state) + ",DATETIME(current_timestamp, 'localtime')",
                     state);
         } catch (Exception e) {
             e.printStackTrace();

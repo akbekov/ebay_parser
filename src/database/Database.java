@@ -69,7 +69,7 @@ public class Database {
             StringBuilder sql = new StringBuilder();
             sql.append("DELETE FROM ").append(table);
             if (condition != null) {
-                sql.append("WHERE ").append(condition);
+                sql.append(" WHERE ").append(condition);
             }
             state.executeUpdate(String.valueOf(sql));
             System.out.println("Deleted rows:table:" + table);
